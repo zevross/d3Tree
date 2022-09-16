@@ -362,9 +362,26 @@ HTMLWidgets.widget({
       },
 
       resize: function(width, height) {
+        // Resize the canvas
+        d3.select(el).select('svg')
+        .attr('width', width)
+        .attr('height', height);
 
-        // TODO: code to re-render the widget with a new size
+        // width and height, corrected for margins
+        var heightMargin = height - options.margin.top - options.margin.bottom,
+        widthMargin = width - options.margin.left - options.margin.right;
 
+        // Calculate a reasonable link length, if not originally specified
+        if (options.linkResponsive) {
+          options.linkLength = widthMargin / options.hierarchy.length
+          if (options.linkLength < 10) {
+            options.linkLength = 10 // Offscreen or too short
+          }
+        }
+        // Update the treemap to fit the new canvas size
+        treemap = d3.tree().size([heightMargin, widthMargin])
+        .separation(separationFun);
+        update(root)
       }
 
     };
